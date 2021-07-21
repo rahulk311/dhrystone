@@ -1,11 +1,8 @@
-//GO.SYSIN DD dhry.h
-//echo dhry_1.c 1>&2
-//sed >dhry_1.c <<'//GO.SYSIN DD dhry_1.c' 's/^//'
 /*
  ****************************************************************************
  *
  *                   "DHRYSTONE" Benchmark Program
- *                   
+ *                   -----------------------------
  *                                                                            
  *  Version:    C, Version 2.1
  *                                                                            
@@ -19,7 +16,6 @@
  */
 
 #include "dhry.h"
-#include <string.h>
 
 /* Global Variables: */
 
@@ -51,7 +47,7 @@ Enumeration     Func_1 ();
 struct tms      time_info;
 extern  int     times ();
                 /* see library function "times" */
-#define Too_Small_Time 120
+#define Too_Small_Time (2*HZ)
                 /* Measurements should last at least about 2 seconds */
 #endif
 #ifdef TIME
@@ -59,6 +55,10 @@ extern long     time();
                 /* see library function "time"  */
 #define Too_Small_Time 2
                 /* Measurements should last at least 2 seconds */
+#endif
+#ifdef MSC_CLOCK
+extern clock_t	clock();
+#define Too_Small_Time (2*HZ)
 #endif
 
 long            Begin_Time,
@@ -91,18 +91,18 @@ main ()
   Next_Ptr_Glob = (Rec_Pointer) malloc (sizeof (Rec_Type));
   Ptr_Glob = (Rec_Pointer) malloc (sizeof (Rec_Type));
 
-  Ptr_Glob>Ptr_Comp                    = Next_Ptr_Glob;
-  Ptr_Glob>Discr                       = Ident_1;
-  Ptr_Glob>variant.var_1.Enum_Comp     = Ident_3;
-  Ptr_Glob>variant.var_1.Int_Comp      = 40;
-  strcpy (Ptr_Glob>variant.var_1.Str_Comp, 
+  Ptr_Glob->Ptr_Comp                    = Next_Ptr_Glob;
+  Ptr_Glob->Discr                       = Ident_1;
+  Ptr_Glob->variant.var_1.Enum_Comp     = Ident_3;
+  Ptr_Glob->variant.var_1.Int_Comp      = 40;
+  strcpy (Ptr_Glob->variant.var_1.Str_Comp, 
           "DHRYSTONE PROGRAM, SOME STRING");
   strcpy (Str_1_Loc, "DHRYSTONE PROGRAM, 1'ST STRING");
 
   Arr_2_Glob [8][7] = 10;
         /* Was missing in published program. Without this statement,    */
         /* Arr_2_Glob [8][7] would have an undefined value.             */
-        /* Warning: With 16Bit processors and Number_Of_Runs > 32000,  */
+        /* Warning: With 16-Bit processors and Number_Of_Runs > 32000,  */
         /* overflow may occur for this array element.                   */
 
   printf ("\n");
@@ -120,9 +120,13 @@ main ()
   }
   printf ("Please give the number of runs through the benchmark: ");
   {
+#ifdef  ITERATIONS
+    Number_Of_Runs = ITERATIONS;
+#else
     int n;
     scanf ("%d", &n);
     Number_Of_Runs = n;
+#endif
   }
   printf ("\n");
 
@@ -139,6 +143,9 @@ main ()
 #ifdef TIME
   Begin_Time = time ( (long *) 0);
 #endif
+#ifdef MSC_CLOCK
+  Begin_Time = clock();
+#endif
 
   for (Run_Index = 1; Run_Index <= Number_Of_Runs; ++Run_Index)
   {
@@ -154,7 +161,7 @@ main ()
       /* Bool_Glob == 1 */
     while (Int_1_Loc < Int_2_Loc)  /* loop body executed once */
     {
-      Int_3_Loc = 5 * Int_1_Loc  Int_2_Loc;
+      Int_3_Loc = 5 * Int_1_Loc - Int_2_Loc;
         /* Int_3_Loc == 7 */
       Proc_7 (Int_1_Loc, Int_2_Loc, &Int_3_Loc);
         /* Int_3_Loc == 7 */
@@ -179,7 +186,7 @@ main ()
       /* Int_1_Loc == 3, Int_2_Loc == 3, Int_3_Loc == 7 */
     Int_2_Loc = Int_2_Loc * Int_1_Loc;
     Int_1_Loc = Int_2_Loc / Int_3_Loc;
-    Int_2_Loc = 7 * (Int_2_Loc  Int_3_Loc)  Int_1_Loc;
+    Int_2_Loc = 7 * (Int_2_Loc - Int_3_Loc) - Int_1_Loc;
       /* Int_1_Loc == 1, Int_2_Loc == 13, Int_3_Loc == 7 */
     Proc_2 (&Int_1_Loc);
       /* Int_1_Loc == 5 */
@@ -196,6 +203,9 @@ main ()
 #endif
 #ifdef TIME
   End_Time = time ( (long *) 0);
+#endif
+#ifdef MSC_CLOCK
+  End_Time = clock();
 #endif
 
   printf ("Execution ends\n");
@@ -214,28 +224,28 @@ main ()
   printf ("        should be:   %d\n", 7);
   printf ("Arr_2_Glob[8][7]:    %d\n", Arr_2_Glob[8][7]);
   printf ("        should be:   Number_Of_Runs + 10\n");
-  printf ("Ptr_Glob>\n");
-  printf ("  Ptr_Comp:          %d\n", (int) Ptr_Glob>Ptr_Comp);
-  printf ("        should be:   (implementationdependent)\n");
-  printf ("  Discr:             %d\n", Ptr_Glob>Discr);
+  printf ("Ptr_Glob->\n");
+  printf ("  Ptr_Comp:          %d\n", (int) Ptr_Glob->Ptr_Comp);
+  printf ("        should be:   (implementation-dependent)\n");
+  printf ("  Discr:             %d\n", Ptr_Glob->Discr);
   printf ("        should be:   %d\n", 0);
-  printf ("  Enum_Comp:         %d\n", Ptr_Glob>variant.var_1.Enum_Comp);
+  printf ("  Enum_Comp:         %d\n", Ptr_Glob->variant.var_1.Enum_Comp);
   printf ("        should be:   %d\n", 2);
-  printf ("  Int_Comp:          %d\n", Ptr_Glob>variant.var_1.Int_Comp);
+  printf ("  Int_Comp:          %d\n", Ptr_Glob->variant.var_1.Int_Comp);
   printf ("        should be:   %d\n", 17);
-  printf ("  Str_Comp:          %s\n", Ptr_Glob>variant.var_1.Str_Comp);
+  printf ("  Str_Comp:          %s\n", Ptr_Glob->variant.var_1.Str_Comp);
   printf ("        should be:   DHRYSTONE PROGRAM, SOME STRING\n");
-  printf ("Next_Ptr_Glob>\n");
-  printf ("  Ptr_Comp:          %d\n", (int) Next_Ptr_Glob>Ptr_Comp);
-  printf ("        should be:   (implementationdependent), same as above\n");
-  printf ("  Discr:             %d\n", Next_Ptr_Glob>Discr);
+  printf ("Next_Ptr_Glob->\n");
+  printf ("  Ptr_Comp:          %d\n", (int) Next_Ptr_Glob->Ptr_Comp);
+  printf ("        should be:   (implementation-dependent), same as above\n");
+  printf ("  Discr:             %d\n", Next_Ptr_Glob->Discr);
   printf ("        should be:   %d\n", 0);
-  printf ("  Enum_Comp:         %d\n", Next_Ptr_Glob>variant.var_1.Enum_Comp);
+  printf ("  Enum_Comp:         %d\n", Next_Ptr_Glob->variant.var_1.Enum_Comp);
   printf ("        should be:   %d\n", 1);
-  printf ("  Int_Comp:          %d\n", Next_Ptr_Glob>variant.var_1.Int_Comp);
+  printf ("  Int_Comp:          %d\n", Next_Ptr_Glob->variant.var_1.Int_Comp);
   printf ("        should be:   %d\n", 18);
   printf ("  Str_Comp:          %s\n",
-                                Next_Ptr_Glob>variant.var_1.Str_Comp);
+                                Next_Ptr_Glob->variant.var_1.Str_Comp);
   printf ("        should be:   DHRYSTONE PROGRAM, SOME STRING\n");
   printf ("Int_1_Loc:           %d\n", Int_1_Loc);
   printf ("        should be:   %d\n", 5);
@@ -251,7 +261,7 @@ main ()
   printf ("        should be:   DHRYSTONE PROGRAM, 2'ND STRING\n");
   printf ("\n");
 
-  User_Time = End_Time  Begin_Time;
+  User_Time = End_Time - Begin_Time;
 
   if (User_Time < Too_Small_Time)
   {
@@ -287,31 +297,31 @@ Proc_1 (Ptr_Val_Par)
 REG Rec_Pointer Ptr_Val_Par;
     /* executed once */
 {
-  REG Rec_Pointer Next_Record = Ptr_Val_Par>Ptr_Comp;  
+  REG Rec_Pointer Next_Record = Ptr_Val_Par->Ptr_Comp;  
                                         /* == Ptr_Glob_Next */
-  /* Local variable, initialized with Ptr_Val_Par>Ptr_Comp,    */
+  /* Local variable, initialized with Ptr_Val_Par->Ptr_Comp,    */
   /* corresponds to "rename" in Ada, "with" in Pascal           */
   
-  structassign (*Ptr_Val_Par>Ptr_Comp, *Ptr_Glob); 
-  Ptr_Val_Par>variant.var_1.Int_Comp = 5;
-  Next_Record>variant.var_1.Int_Comp 
-        = Ptr_Val_Par>variant.var_1.Int_Comp;
-  Next_Record>Ptr_Comp = Ptr_Val_Par>Ptr_Comp;
-  Proc_3 (&Next_Record>Ptr_Comp);
-    /* Ptr_Val_Par>Ptr_Comp>Ptr_Comp 
-                        == Ptr_Glob>Ptr_Comp */
-  if (Next_Record>Discr == Ident_1)
+  structassign (*Ptr_Val_Par->Ptr_Comp, *Ptr_Glob); 
+  Ptr_Val_Par->variant.var_1.Int_Comp = 5;
+  Next_Record->variant.var_1.Int_Comp 
+        = Ptr_Val_Par->variant.var_1.Int_Comp;
+  Next_Record->Ptr_Comp = Ptr_Val_Par->Ptr_Comp;
+  Proc_3 (&Next_Record->Ptr_Comp);
+    /* Ptr_Val_Par->Ptr_Comp->Ptr_Comp 
+                        == Ptr_Glob->Ptr_Comp */
+  if (Next_Record->Discr == Ident_1)
     /* then, executed */
   {
-    Next_Record>variant.var_1.Int_Comp = 6;
-    Proc_6 (Ptr_Val_Par>variant.var_1.Enum_Comp, 
-           &Next_Record>variant.var_1.Enum_Comp);
-    Next_Record>Ptr_Comp = Ptr_Glob>Ptr_Comp;
-    Proc_7 (Next_Record>variant.var_1.Int_Comp, 10, 
-           &Next_Record>variant.var_1.Int_Comp);
+    Next_Record->variant.var_1.Int_Comp = 6;
+    Proc_6 (Ptr_Val_Par->variant.var_1.Enum_Comp, 
+           &Next_Record->variant.var_1.Enum_Comp);
+    Next_Record->Ptr_Comp = Ptr_Glob->Ptr_Comp;
+    Proc_7 (Next_Record->variant.var_1.Int_Comp, 10, 
+           &Next_Record->variant.var_1.Int_Comp);
   }
   else /* not executed */
-    structassign (*Ptr_Val_Par, *Ptr_Val_Par>Ptr_Comp);
+    structassign (*Ptr_Val_Par, *Ptr_Val_Par->Ptr_Comp);
 } /* Proc_1 */
 
 
@@ -330,8 +340,8 @@ One_Fifty   *Int_Par_Ref;
     if (Ch_1_Glob == 'A')
       /* then, executed */
     {
-      Int_Loc = 1;
-      *Int_Par_Ref = Int_Loc  Int_Glob;
+      Int_Loc -= 1;
+      *Int_Par_Ref = Int_Loc - Int_Glob;
       Enum_Loc = Ident_1;
     } /* if */
   while (Enum_Loc != Ident_1); /* true */
@@ -348,8 +358,8 @@ Rec_Pointer *Ptr_Ref_Par;
 {
   if (Ptr_Glob != Null)
     /* then, executed */
-    *Ptr_Ref_Par = Ptr_Glob>Ptr_Comp;
-  Proc_7 (10, Int_Glob, &Ptr_Glob>variant.var_1.Int_Comp);
+    *Ptr_Ref_Par = Ptr_Glob->Ptr_Comp;
+  Proc_7 (10, Int_Glob, &Ptr_Glob->variant.var_1.Int_Comp);
 } /* Proc_3 */
 
 
@@ -382,7 +392,8 @@ register char   *d;
 register char   *s;
 register int    l;
 {
-        while (l) *d++ = *s++;
+        while (l--) *d++ = *s++;
 }
 #endif
+
 
