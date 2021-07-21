@@ -1,8 +1,11 @@
+//GO.SYSIN DD VARIATIONS
+//echo dhry.h 1>&2
+//sed >dhry.h <<'//GO.SYSIN DD dhry.h' 's/^//'
 /*
  ****************************************************************************
  *
  *                   "DHRYSTONE" Benchmark Program
- *                   -----------------------------
+ *                   
  *                                                                            
  *  Version:    C, Version 2.1
  *                                                                            
@@ -11,22 +14,22 @@
  *  Date:       May 25, 1988
  *
  *  Author:     Reinhold P. Weicker
- *                      Siemens AG, E STE 35
- *                      Postfach 3240
+ *                      Siemens AG, AUT E 51
+ *                      Postfach 3220
  *                      8520 Erlangen
  *                      Germany (West)
- *                              Phone:  [xxx-49]-9131-7-20330
- *                                      (8-17 Central European Time)
- *                              Usenet: ..!mcvax!unido!estevax!weicker
+ *                              Phone:  [+49]9131720330
+ *                                      (817 Central European Time)
+ *                              Usenet: ..!mcsun!unido!estevax!weicker
  *
  *              Original Version (in Ada) published in
  *              "Communications of the ACM" vol. 27., no. 10 (Oct. 1984),
- *              pp. 1013 - 1030, together with the statistics
+ *              pp. 1013  1030, together with the statistics
  *              on which the distribution of statements etc. is based.
  *
  *              In this C version, the following C library functions are used:
- *              - strcpy, strcmp (inside the measurement loop)
- *              - printf, scanf (outside the measurement loop)
+ *               strcpy, strcmp (inside the measurement loop)
+ *               printf, scanf (outside the measurement loop)
  *              In addition, Berkeley UNIX system calls "times ()" or "time ()"
  *              are used for execution time measurement. For measurements
  *              on other systems, these calls have to be changed.
@@ -38,7 +41,7 @@
  *              PC Research. Inc.
  *              94 Apple Orchard Drive
  *              Tinton Falls, NJ 07724
- *                      Phone:  (201) 389-8963 (9-17 EST)               
+ *                      Phone:  (201) 3898963 (917 EST)               
  *                      Usenet: ...!uunet!pcrat!rick
  *
  *      Please send results to Rick Richardson and/or Reinhold Weicker.
@@ -78,7 +81,7 @@
  *              him over the UNIX network Usenet.
  *              I also thank Chaim Benedelac (National Semiconductor),
  *              David Ditzel (SUN), Earl Killian and John Mashey (MIPS),
- *              Alan Smith and Rafael Saavedra-Barrera (UC at Berkeley)
+ *              Alan Smith and Rafael SaavedraBarrera (UC at Berkeley)
  *              for their help with comments on earlier versions of the
  *              benchmark.
  *
@@ -105,14 +108,14 @@
  *              Since it has proven difficult to subtract the time for the
  *              measurement loop overhead in a correct way, the loop check
  *              has been made a part of the benchmark. This does have
- *              an impact - though a very minor one - on the distribution
+ *              an impact  though a very minor one  on the distribution
  *              statistics which have been updated for this version.
  *
  *              All changes within the measurement loop are described
  *              and discussed in the companion paper "Rationale for
  *              Dhrystone version 2".
  *
- *              Because of the self-imposed limitation that the order and
+ *              Because of the selfimposed limitation that the order and
  *              distribution of the executed statements should not be
  *              changed, there are still cases where optimizing compilers
  *              may not generate code for some statements. To a certain
@@ -124,36 +127,36 @@
  *              the UNIX network Usenet in March 1988 except that it corrects
  *              some minor deficiencies that were found by users of version 2.0.
  *              The only change within the measurement loop is that a
- *              non-executed "else" part was added to the "if" statement in
- *              Func_3, and a non-executed "else" part removed from Proc_3.
+ *              nonexecuted "else" part was added to the "if" statement in
+ *              Func_3, and a nonexecuted "else" part removed from Proc_3.
  *
  ***************************************************************************
  *
  * Defines:     The following "Defines" are possible:
- *              -DREG=register          (default: Not defined)
+ *              DREG=register          (default: Not defined)
  *                      As an approximation to what an average C programmer
  *                      might do, the "register" storage class is applied
- *                      (if enabled by -DREG=register)
- *                      - for local variables, if they are used (dynamically)
+ *                      (if enabled by DREG=register)
+ *                       for local variables, if they are used (dynamically)
  *                        five or more times
- *                      - for parameters if they are used (dynamically)
+ *                       for parameters if they are used (dynamically)
  *                        six or more times
  *                      Note that an optimal "register" strategy is
- *                      compiler-dependent, and that "register" declarations
+ *                      compilerdependent, and that "register" declarations
  *                      do not necessarily lead to faster execution.
- *              -DNOSTRUCTASSIGN        (default: Not defined)
+ *              DNOSTRUCTASSIGN        (default: Not defined)
  *                      Define if the C compiler does not support
  *                      assignment of structures.
- *              -DNOENUMS               (default: Not defined)
+ *              DNOENUMS               (default: Not defined)
  *                      Define if the C compiler does not support
  *                      enumeration types.
- *              -DTIMES                 (default)
- *              -DTIME
+ *              DTIMES                 (default)
+ *              DTIME
  *                      The "times" function of UNIX (returning process times)
  *                      or the "time" function (returning wallclock time)
  *                      is used for measurement. 
  *                      For single user machines, "time ()" is adequate. For
- *                      multi-user machines where you cannot get single-user
+ *                      multiuser machines where you cannot get singleuser
  *                      access, use the "times ()" function. If you have
  *                      neither, use a stopwatch in the dead of night.
  *                      "printf"s are provided marking the points "Start Timer"
@@ -162,7 +165,7 @@
  *                      run this program, which will (erroneously) include
  *                      the time to allocate storage (malloc) and to perform
  *                      the initialization.
- *              -DHZ=nnn
+ *              DHZ=nnn
  *                      In Berkeley UNIX, the function "times" returns process
  *                      time in 1/HZ seconds, with HZ = 60 for most systems.
  *                      CHECK YOUR SYSTEM DESCRIPTION BEFORE YOU JUST APPLY
@@ -173,19 +176,19 @@
  *  Compilation model and measurement (IMPORTANT):
  *
  *  This C version of Dhrystone consists of three files:
- *  - dhry.h (this file, containing global definitions and comments)
- *  - dhry_1.c (containing the code corresponding to Ada package Pack_1)
- *  - dhry_2.c (containing the code corresponding to Ada package Pack_2)
+ *   dhry.h (this file, containing global definitions and comments)
+ *   dhry_1.c (containing the code corresponding to Ada package Pack_1)
+ *   dhry_2.c (containing the code corresponding to Ada package Pack_2)
  *
  *  The following "ground rules" apply for measurements:
- *  - Separate compilation
- *  - No procedure merging
- *  - Otherwise, compiler optimizations are allowed but should be indicated
- *  - Default results are those without register declarations
+ *   Separate compilation
+ *   No procedure merging
+ *   Otherwise, compiler optimizations are allowed but should be indicated
+ *   Default results are those without register declarations
  *  See the companion paper "Rationale for Dhrystone Version 2" for a more
  *  detailed discussion of these ground rules.
  *
- *  For 16-Bit processors (e.g. 80186, 80286), times for all compilation
+ *  For 16Bit processors (e.g. 80186, 80286), times for all compilation
  *  models ("small", "medium", "large" etc.) should be given if possible,
  *  together with a definition of these models for the compiler system used.
  *
@@ -207,15 +210,15 @@
  *  103 statements are dynamically executed. The program is balanced with
  *  respect to the three aspects:                                             
  *
- *    - statement type
- *    - operand type
- *    - operand locality
+ *     statement type
+ *     operand type
+ *     operand locality
  *         operand global, local, parameter, or constant.                     
  *
  *  The combination of these three aspects is balanced only approximately.    
  *
  *  1. Statement Type:                                                        
- *  -----------------             number
+ *               number
  *
  *     V1 = V2                     9
  *       (incl. V1 = F(..)
@@ -224,18 +227,18 @@
  *       with array element
  *     Assignment,                 6
  *       with record component
- *                                --
+ *                                
  *                                34       34
  *
- *     X = Y +|-|"&&"|"|" Z        5
- *     X = Y +|-|"==" Constant     6
- *     X = X +|- 1                 3
+ *     X = Y +||"&&"|"|" Z        5
+ *     X = Y +||"==" Constant     6
+ *     X = X +| 1                 3
  *     X = Y *|/ Z                 2
  *     X = Expression,             1
  *           two operators
  *     X = Expression,             1
  *           three operators
- *                                --
+ *                                
  *                                18       18
  *
  *     if ....                    14
@@ -250,7 +253,7 @@
  *     break                       1
  *     declaration with            1
  *       initialization
- *                                --
+ *                                
  *                                34       34
  *
  *     P (...)  procedure call    11
@@ -260,23 +263,24 @@
  *             function  call      6
  *       user function        5                                         
  *       library function     1                                               
- *                                --                                          
+ *                                                                          
  *                                17       17
- *                                        ---
+ *                                        
  *                                        103
  *
  *    The average number of parameters in procedure or function calls
- *    is 1.82 (not counting the function values aX *
+ *    is 1.82 (not counting the function values as implicit parameters).
+ *
  *
  *  2. Operators
- *  ------------
+ *  
  *                          number    approximate
  *                                    percentage
  *
  *    Arithmetic             32          50.8                                 
  *
  *       +                     21          33.3                              
- *       -                      7          11.1                              
+ *                             7          11.1                              
  *       *                      3           4.8
  *       / (int div)            1           1.6
  *
@@ -291,16 +295,16 @@
  *
  *    Logic                   4            6.3
  *
- *       && (AND-THEN)          1            1.6
+ *       && (ANDTHEN)          1            1.6
  *       |  (OR)                1            1.6
  *       !  (NOT)               2            3.2
  * 
- *                           --          -----
+ *                                     
  *                           63          100.1
  *
  *
  *  3. Operand Type (counted once per operand reference):
- *  ---------------
+ *  
  *                          number    approximate
  *                                    percentage
  *
@@ -310,7 +314,7 @@
  *     String30                6         2.5 %
  *     Array                   2         0.8 %
  *     Record                  2         0.8 %
- *                           ---       -------
+ *                                  
  *                           242       100.0 %
  *
  *  When there is an access path leading to the final operand (e.g. a record
@@ -318,7 +322,7 @@
  *
  *
  *  4. Operand Locality:                                                      
- *  -------------------
+ *  
  *                                number    approximate
  *                                          percentage
  *
@@ -329,7 +333,7 @@
  *        reference                    22         9.1 %
  *     function result               6         2.5 %
  *     constant                     55        22.7 %
- *                                 ---       -------
+ *                                        
  *                                 242       100.0 %
  *
  *
@@ -347,19 +351,10 @@
 /* Compiler and system dependent definitions: */
 
 #ifndef TIME
-#undef TIMES
 #define TIMES
 #endif
                 /* Use times(2) time function unless    */
                 /* explicitly defined otherwise         */
-
-#ifdef MSC_CLOCK
-#undef HZ
-#undef TIMES
-#include <time.h>
-#define HZ	CLK_TCK
-#endif
-		/* Use Microsoft C hi-res clock */
 
 #ifdef TIMES
 #include <sys/types.h>
@@ -427,5 +422,4 @@ typedef struct record
                   } var_3;
           } variant;
       } Rec_Type, *Rec_Pointer;
-
 
