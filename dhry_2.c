@@ -1,11 +1,8 @@
-//GO.SYSIN DD dhry_1.c
-//echo dhry_2.c 1>&2
-//sed >dhry_2.c <<'//GO.SYSIN DD dhry_2.c' 's/^//'
 /*
  ****************************************************************************
  *
  *                   "DHRYSTONE" Benchmark Program
- *                   
+ *                   -----------------------------
  *                                                                            
  *  Version:    C, Version 2.1
  *                                                                            
@@ -19,7 +16,6 @@
  */
 
 #include "dhry.h"
-#include <string.h>
 
 #ifndef REG
 #define REG
@@ -104,7 +100,7 @@ int             Int_2_Par_Val;
   Arr_1_Par_Ref [Int_Loc+30] = Int_Loc;
   for (Int_Index = Int_Loc; Int_Index <= Int_Loc+1; ++Int_Index)
     Arr_2_Par_Ref [Int_Loc] [Int_Index] = Int_Loc;
-  Arr_2_Par_Ref [Int_Loc] [Int_Loc1] += 1;
+  Arr_2_Par_Ref [Int_Loc] [Int_Loc-1] += 1;
   Arr_2_Par_Ref [Int_Loc+20] [Int_Loc] = Arr_1_Par_Ref [Int_Loc];
   Int_Glob = 5;
 } /* Proc_8 */
@@ -193,3 +189,4 @@ Enumeration Enum_Par_Val;
   else /* not executed */
     return (false);
 } /* Func_3 */
+
